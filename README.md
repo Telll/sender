@@ -1,2 +1,2 @@
-# sender
-Sends tags to mobile or another device.
+# tests
+Development and tests for telll SDK infra-structure.
