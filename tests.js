@@ -37,17 +37,8 @@ QUnit.asyncTest( "getPhotolink", function( assert ) {
 	console.log(lp);
         setTimeout(function(){
 
-//////////////////////////////////////////////////////////////
-        var xhr = new XMLHttpRequest();
-        var headers =  {"X-Api-Key": 123, "X-Auth-Key": "4574eb62ff5337ce17f3d657f3b74cbcf3f9cc42"}; 
-        xhr.open('POST', 'http://52.3.72.192:3000/app/photolink/send/0/0', true);
-        for(var key in headers) {
-                xhr.setRequestHeader(key, headers[key]);
-        }
+	spl = saas.sendPhotolink('{"extradata":"blablabla"}');
 
-        xhr.send('{"extradata": "blablabla"}');
-
-/////////////////////////////////////////////////////////////
 /*
 $.ajaxSetup({
   headers : {

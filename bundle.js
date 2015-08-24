@@ -562,15 +562,10 @@ tws = function (server)
 
 
 /**
- * _init sets all tws attributes to their default value. Make sure to call this
- * method within your class constructor
+ * Init
  */
 tws.prototype._init = function (server)
 {
-
-  /**Aggregations: */
-
-  /**Compositions: */
 
 this.m_server = server;
 this.method;
@@ -587,10 +582,6 @@ this.xhr;
  */
 tws.prototype.login = function ()
 {
-
-  /**Aggregations: */
-
-  /**Compositions: */
 
 this.m_jqxhr = $.getJSON( this.m_server, function() {
   console.log( "success" );
@@ -651,7 +642,21 @@ tws.prototype.getPhotolink = function ()
 	return lp;
 }
 
+/**
+ * 
+ * 
+ */
+tws.prototype.sendPhotolink = function (str)
+{
+        var xhr = new XMLHttpRequest();
+        var headers =  {"X-Api-Key": 123, "X-Auth-Key": "4574eb62ff5337ce17f3d657f3b74cbcf3f9cc42"}; 
+        xhr.open('POST', 'http://52.3.72.192:3000/app/photolink/send/0/0', true);
+        for(var key in headers) {
+                xhr.setRequestHeader(key, headers[key]);
+        }
 
+        xhr.send(str);
+}
 
 
 /**
