@@ -281,6 +281,74 @@ MockPlayer.prototype._init = function ()
   /**Compositions: */
 
 }
+/**
+  * class PhotolinksBar
+  * 
+  */
+
+PhotolinksBar = function ()
+{
+  this._init ();
+}
+
+//PhotolinksBar.prototype = new iUI ();
+
+PhotolinksBar.prototype._init = function (){
+
+}
+
+
+/**
+  * class Clickbox
+  * 
+  */
+
+Clickbox = function ()
+{
+  this._init ();
+}
+
+//Clickbox.prototype = new iUI ();
+
+Clickbox.prototype._init = function (){
+
+}
+
+
+
+/**
+  * class PhotolinksList
+  * 
+  */
+
+PhotolinksList = function ()
+{
+  this._init ();
+}
+
+//PhotolinksList.prototype = new iUI ();
+
+PhotolinksList.prototype._init = function (){
+
+}
+
+
+
+/**
+  * class Trackm
+  * 
+  */
+
+Trackm = function ()
+{
+  this._init ();
+}
+
+Trackm.prototype = new iData ();
+
+Trackm.prototype._init = function (){
+
+}
 
 /**
   * class Movie
