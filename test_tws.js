@@ -3,60 +3,59 @@
 */
 
 QUnit.test( "classes", function( assert ) {
-  saas = new tws();
+  saas = new tws('http://52.3.72.192:3000');
   movie = new Movie();
-  user = new User();
+  user = new User({'error':'error'});
   photolink = new Photolink();
-  canvas = new Canvas();
   trackm = new Trackm();
-  controls = new Controls();
-  panel = new Panel();
-  photolinksBar = new PhotolinksBar();
-  tagCanvas = new TagCanvas();
-  mockPlayer = new MockPlayer();
-  myPlayer = new TelllPlayer();
   clickbox = new Clickbox();
   photolinksList = new PhotolinksList();
   assert.ok( 1 == "1", "Classes loaded!" );
 });
 
 // Create a new user
-QUnit.asyncTest( "user", function( assert ) {
-    saas = new tws();
+QUnit.test( "user", function( assert ) {
+    var done = assert.async();
+    saas = new tws('http://52.3.72.192:3000');
     data = {
-        username: "mock",
-        email: "mock@telll.me",
-        password: "blablabla"
+        'username': "mock_01",
+        'email': "mock_01@telll.me",
+        'password': "blablabla"
     };
     user = new User(data);
-    authData = saas.user(user);
-    authData.onData = function(data) {
-        phData = data;
-        console.log(phData);
-        jsData = JSON.parse(phData);
-        assert.ok( jsData.authKey, "User authenticated.");
-    };
-    authData.connect();
+    xhr = saas.user(user);
+    xhr.addEventListener('load', function(){
+        console.log(this.responseText);
+        jsData = JSON.parse(this.responseText);
+        assert.ok( jsData.sent, "Loaded.");
+        done();
+    });
 });
 
 // Must login to have an auth key and use tws
-QUnit.asyncTest( "login", function( assert ) {
-    saas = new tws();
-    u = "mock";
-    p = "blablabla";
-    user = new User(u, p);
-    authData = saas.login(user);
-    authData.onData = function(data) {
-        uData = data;
-        console.log(uData);
-        jsData = JSON.parse(uData);
-        assert.ok( jsData.authKey, "User authenticated.");
+QUnit.test( "login", function( assert ) {
+    var done = assert.async();
+    saas = new tws('http://52.3.72.192:3000');
+    data = {
+        'username': "mock_01",
+        'email': "mock_01@telll.me",
+        'password': "blablabla"
     };
-    authData.connect();
+    user = new User(data);
+    xhr = saas.login(user);
+    xhr.addEventListener('load', function(){
+        console.log(this.responseText);
+        jsData = JSON.parse(this.responseText);
+        console.log(jsData);
+        if (jsData.error) alert(jsData.error);
+        assert.ok( jsData.auth_key, "User authenticated: "+jsData.auth_key);
+        done();
+    });
 });
 
 // Create a new movie
 QUnit.asyncTest( "movie", function( assert ) {
+	assert.expect( 1 );
     saas = new tws();
     data = {
         title: "Test Movie",

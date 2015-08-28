@@ -186,9 +186,9 @@ iPlayer = function ()
   this._init ();
 }
 
-iPlayer.prototype._init = function (movie)
+iPlayer.prototype._init = function ()
 {
-  
+   this.state = "STOPPED"; 
 }
 
 
@@ -200,7 +200,7 @@ iPlayer.prototype._init = function (movie)
  */
 iPlayer.prototype.play = function (movie)
 {
-  
+   this.state = "PLAYING"; 
 }
 
 
@@ -209,8 +209,17 @@ iPlayer.prototype.play = function (movie)
  */
 iPlayer.prototype.stop = function ()
 {
-  
+   this.state = "STOPPED"; 
 }
+
+/**
+ * 
+ */
+iPlayer.prototype.pause = function ()
+{
+   this.state = "PAUSED"; 
+}
+
 
 
 /**
@@ -220,7 +229,8 @@ iPlayer.prototype.stop = function ()
  */
 iPlayer.prototype.load = function (movie)
 {
-  
+    this.movie = movie;
+    this.loaded = true; 
 }
 
 
@@ -231,16 +241,16 @@ iPlayer.prototype.load = function (movie)
  */
 iPlayer.prototype.seek = function (go_to_seconds)
 {
-  
+ this._actualSeconds = go_to_seconds; 
 }
 
 
 /**
  * 
  */
-iPlayer.prototype.actual_seconds = function ()
+iPlayer.prototype.actualSeconds = function ()
 {
-  
+  return this._actualSeconds;
 }
 
 
@@ -254,6 +264,18 @@ iPlayer.prototype.volume = function (new_volume)
   
 }
 
+/**
+ * 
+ * @param event
+ * @param callback
+    *      
+ */
+iPlayer.prototype.on = function (evt, callback)
+{
+  this.me[0].addEventListener(evt, callback);
+}
+
+
 
 
 
@@ -262,9 +284,9 @@ iPlayer.prototype.volume = function (new_volume)
   * 
   */
 
-MockPlayer = function ()
+MockPlayer = function ($div, data)
 {
-  this._init ();
+  this._init ($div,data);
 }
 
 MockPlayer.prototype = new iPlayer ();
@@ -273,14 +295,28 @@ MockPlayer.prototype = new iPlayer ();
  * _init sets all MockPlayer attributes to their default value. Make sure to call
  * this method within your class constructor
  */
-MockPlayer.prototype._init = function ()
+MockPlayer.prototype._init = function ($div, data)
 {
-
-  /**Aggregations: */
-
-  /**Compositions: */
-
+  this.me = $div; 
+  //iPlayer.prototype._init.call(this, $div, data);
+  $div.append("<h1>MockPlayer</h1>");
 }
+
+/**
+ * 
+ * @param event
+ * @param callback
+    *      
+MockPlayer.prototype.on = function (evt, callback)
+{
+  this.me[0].addEventListener(evt, callback);
+}
+ */
+
+
+
+
+
 /**
   * class PhotolinksBar
   * 
@@ -639,63 +675,75 @@ this.m_server = server;
 this.method;
 this.url;
 this.delimiter;
-this.headers;
+this.headers = {"X-Api-Key": 123, "X-Auth-Key": "395fb7b657db2fb5656f34de3840e73c90b79c31"}; 
 this.xhr;
 
 }
 
 /**
- * 
+ * user 
  * 
  */
-tws.prototype.login = function ()
+tws.prototype.user = function (data)
 {
+    console.log('Creating new user on tws');
+    console.log(data);
+    if (data.username && data.email && data.password){
+        // call tws to create a new user
 
-this.m_jqxhr = $.getJSON( this.m_server, function() {
-  console.log( "success" );
-})
-  .done(function() {
-    console.log( "second success" );
-  })
-  .fail(function() {
-    console.log( "error" );
-  })
-  .always(function() {
-    console.log( "complete" );
-  });
+        var send = JSON.stringify(data);
+        console.log(send);
+        var xhr = new XMLHttpRequest();
+        xhr.addEventListener('load', function(){
+            console.log('Response');
+            console.log(this.responseText);
+        });
+        xhr.open('POST', 'http://52.3.72.192:3000/app/user', true);
+        for(var key in this.headers) {
+                xhr.setRequestHeader(key, this.headers[key]);
+        }
+        xhr.send(send);
+        return xhr;
 
+
+    } else {
+        console.log ("{error:'wrong user data'}");
+        return "{error:'wrong user data'}";
+    }
 }
 
+
 /**
- * 
+ * login 
  * 
  */
-tws.prototype.getPhotolinkJQ = function ()
+tws.prototype.login = function (data)
 {
-url = this.m_server+'/app/photolink/lp';
-$.ajaxSetup({
-  headers : {
-    'X-API-Key':'1234',
-    'X-Auth-Key': '4574eb62ff5337ce17f3d657f3b74cbcf3f9cc42', 
-  }
-});
-console.log('Getting photolink from '+url);
-this.m_jqxhr = $.getJSON( url, function() {
-  console.log( "success" );
-})
-  .done(function() {
-    console.log( "second success" );
-  })
-  .fail(function(m) {
-    console.log( "error" );
-    console.log(m.state() );
-    //console.log(m.statusCode() );
-  })
-  .always(function() {
-    console.log( "complete" );
-    console.log( this );
-  });
-return this.m_jqxhr;
+var url = this.m_server+'/login';
+var ptype = "POST";
+var msg = "Login on tws ...";
+    data.user_name = data.username;
+    console.log(msg);
+    console.log(data);
+    if (data.username && data.password){
+        // call tws to login
+        var send = JSON.stringify(data);
+        console.log(send);
+        var xhr = new XMLHttpRequest();
+        xhr.addEventListener('load', function(){
+            console.log('Response');
+            console.log(this.responseText);
+        });
+        xhr.open(ptype , url, true);
+        for(var key in this.headers) {
+                xhr.setRequestHeader(key, this.headers[key]);
+        }
+        xhr.send(send);
+        return xhr;
+    } else {
+        console.log ("{error:'wrong user data'}");
+        return "{error:'wrong user data'}";
+    }
 }
 
 /**
@@ -705,7 +753,8 @@ return this.m_jqxhr;
 tws.prototype.getPhotolink = function ()
 {
 	this.url = this.m_server+'/app/photolink/lp';
-        var lp = new LongPolling("GET", "http://52.3.72.192:3000/app/photolink/lp", "\n//----------//", {"X-Api-Key": 1234, "X-Auth-Key": "4574eb62ff5337ce17f3d657f3b74cbcf3f9cc42"});
+        var lp = new LongPolling("GET", "http://52.3.72.192:3000/app/photolink/lp", "\n//----------//", this.headers);
+        //var lp = new LongPolling("GET", "http://52.3.72.192:3000/app/photolink/lp", "\n//----------//", {"X-Api-Key": 1234, "X-Auth-Key": "4574eb62ff5337ce17f3d657f3b74cbcf3f9cc42"});
         lp.create();
 	return lp;
 }
@@ -717,10 +766,9 @@ tws.prototype.getPhotolink = function ()
 tws.prototype.sendPhotolink = function (str)
 {
         var xhr = new XMLHttpRequest();
-        var headers =  {"X-Api-Key": 123, "X-Auth-Key": "4574eb62ff5337ce17f3d657f3b74cbcf3f9cc42"}; 
         xhr.open('POST', 'http://52.3.72.192:3000/app/photolink/send/0/0', true);
-        for(var key in headers) {
-                xhr.setRequestHeader(key, headers[key]);
+        for(var key in this.headers) {
+                xhr.setRequestHeader(key, this.headers[key]);
         }
 
         xhr.send(str);
@@ -732,9 +780,9 @@ tws.prototype.sendPhotolink = function (str)
   * 
   */
 
-User = function ()
+User = function (data)
 {
-  this._init ();
+  this._init (data);
 }
 
 User.prototype = new iData ();
@@ -743,13 +791,14 @@ User.prototype = new iData ();
  * _init sets all User attributes to their default value. Make sure to call this
  * method within your class constructor
  */
-User.prototype._init = function ()
+User.prototype._init = function (data)
 {
-
-  /**Aggregations: */
-
-  /**Compositions: */
-
+ 
+    if (data.username && data.email && data.password){
+    this.username = data.username;
+    this.email    = data.email;
+    this.password = data.password;
+    }
 }
 
 })( jQuery );
